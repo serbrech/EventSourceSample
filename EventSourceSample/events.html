@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <h1>Hello from events.</h1>
+    <ul id="eventList"></ul>
+    <script type="text/javascript">
+        var source = new EventSource("/connect");
+        var eventList = document.getElementById("eventList");
+        console.log(eventList);
+
+        source.addEventListener('message', function (e) {
+            var data = JSON.parse(e.data);
+            addElement('message', data);
+        });
+
+        source.addEventListener('special', function (e) {
+            var data = JSON.parse(e.data);
+            addElement(data.id, data);
+        });
+        
+        source.addEventListener('error', function (e) {
+            addElement("error", e.type);
+        });
+
+        source.addEventListener('open', function(e) {
+            addElement("open", e.type);
+        });
+
+        function addElement(title, data) {
+            var newElement = document.createElement("li");
+            newElement.innerHTML = title + ": " + JSON.stringify(data);
+            eventList.appendChild(newElement);
+        }
+    </script>
+</body>
+</html>
